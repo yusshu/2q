@@ -1,0 +1,19 @@
+# Demo POM for 2Q language
+
+group me.yushust
+name hello-world
+version 0.1.0-snapshot
+
+repositories [
+  (std),
+  "https://qq.unnamed.team/"
+]
+
+dependencies [
+  compile [
+    me.yushust hello-world 0.1.0-snapshot
+  ]
+  runtimeOnly [
+    me.yushust hello 0.1.0-snapshot
+  ]
+]
