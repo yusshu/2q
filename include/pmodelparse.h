@@ -1,5 +1,6 @@
 #include <map>
 #include <string>
+#include <vector>
 
 ///
 /// Enum containg all the possible
@@ -44,8 +45,7 @@ struct MapValue : Value {
       repr += " : ";
       repr += it->second->str_repr();
     }
-    repr += "}";
-    return repr;
+    return repr + "}";
   }
 };
 
@@ -67,11 +67,10 @@ struct StringValue : Value {
 
 struct ListValue : Value {
 
-  Value* values;
-  int length;
+  std::vector<Value*> values;
 
-  ListValue(Value* pvalues, int plength) 
-    : values(pvalues), length(plength) {};
+  ListValue(std::vector<Value*> pvalues) 
+    : values(pvalues) {};
 
   ValueType type() {
     return ValueType::List;
@@ -79,15 +78,13 @@ struct ListValue : Value {
 
   std::string str_repr() {
     std::string repr = "[";
-    for (int i = 0; i < length; i++) {
-      Value* value = values + i;
-      if (i != 0) {
+    for (auto it = values.begin(); it != values.end(); it++) {
+      Value* value = *it;
+      if (it != values.begin()) {
         repr += ", ";
-      } else {
-        repr += "]";
       }
       repr += value->str_repr();
     }
-    return repr;
+    return repr + "]";
   }
 };

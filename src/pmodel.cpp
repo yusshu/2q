@@ -41,11 +41,24 @@ Value* read_value(std::istream* input, char* current, std::unordered_set<char> e
   if (is_letter(*current)) {
     return new StringValue(read_string(input, current, exclusions));
   } else if (*current == '[') {
+    exclusions.insert(']');
     *current = (char) input->get();
+    skip_spaces(input, current, true);
+    
+    std::vector<Value*> values;
+
+    while (*current != ']' && !input->eof()) {
+      Value* value = read_value(input, current, exclusions);
+      values.push_back(value);
+      skip_spaces(input, current, true);
+    }
+    // skip the last spaces
+    skip_spaces(input, current);
+    return new ListValue(values);
   } else if (*current == '{') {
     exclusions.insert('}');
     *current = (char) input->get();
-    skip_spaces(input, current);
+    skip_spaces(input, current, true);
     std::map<std::string, Value*> values;
     while (*current != '}' && !input->eof()) {
       std::string key = read_string(input, current, exclusions);
@@ -53,8 +66,6 @@ Value* read_value(std::istream* input, char* current, std::unordered_set<char> e
       values[key] = value;
       skip_spaces(input, current, true);
     }
-    // skip the last '}' character
-    *current = (char) input->get();
     // skip the last spaces
     skip_spaces(input, current);
     return new MapValue(values);

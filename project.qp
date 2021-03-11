@@ -1,8 +1,13 @@
-group me.yushust
-name hello-world
-version test
+group me.yushust 
+name hello-world 
+version test 
+
+repositories [
+  https://github.com/poto/
+  https://repo.unnamed.team/
+]
 
 dependencies {
   compile me.yushust
-  runtimeOnly me.yushustttttt
+  compile me.yushustttttt
 }
