@@ -7,7 +7,24 @@ repositories [
   https://repo.unnamed.team/
 ]
 
+plugins [ deploy debug ]
+
+lint {
+  indent {
+    style space
+    size 2
+  }
+}
+
+test {
+  use qunit
+}
+
 dependencies {
-  compile me.yushust
-  compile me.yushustttttt
+  compile [
+    me.yushust.test:test2:0.1.0
+  ]
+  runtime [
+    me.yushust.test:test:0.1.0
+  ]
 }

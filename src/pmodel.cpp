@@ -38,7 +38,7 @@ std::string read_string(std::istream* input, char* current, std::unordered_set<c
 
 Value* read_value(std::istream* input, char* current, std::unordered_set<char> exclusions) {
   
-  if (is_letter(*current)) {
+  if (is_letter(*current) || is_number(*current)) {
     return new StringValue(read_string(input, current, exclusions));
   } else if (*current == '[') {
     exclusions.insert(']');
