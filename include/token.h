@@ -12,5 +12,5 @@ inline bool is_number(char c) {
 }
 
 inline bool is_letter(char c) {
-  return (c >= 'a' && 'z' <= c) || (c >= 'A' && 'Z' <= c);
+  return (c >= 'a' && 'z' >= c) || (c >= 'A' && 'Z' >= c);
 }
