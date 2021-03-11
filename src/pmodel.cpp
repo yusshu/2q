@@ -1,88 +1,16 @@
 #include "../include/pmodel.h"
 #include "../include/token.h"
 #include "../include/stlutil.h"
-#include <map>
+#include "../include/pmodelparse.h"
 
 const std::unordered_set<char> emptyCharSet;
 
-enum ValueType {
-  String,
-  List,
-  Map
-};
-
-struct Value {
-  public:
-  virtual ValueType type() = 0;
-
-  virtual std::string str_repr() = 0;
-};
-
-struct MapValue : public Value {
-  public:
-  std::map<std::string, Value*> values;
-
-  MapValue(std::map<std::string, Value*> pvalues) 
-    : values(pvalues) {};
-
-  ValueType type() {
-    return ValueType::Map;
+inline void skip_spaces(std::istream* input, char* current, bool checkCurrent = false) {
+  if (checkCurrent && !is_space_or_break(*current)) {
+    return;
   }
-
-  std::string str_repr() {
-    std::string repr = "{";
-    for (auto it = values.begin(); it != values.end(); it++) {
-      repr += it->first;
-      repr += " : ";
-      repr += it->second->str_repr();
-    }
-    repr += "}";
-    return repr;
-  }
-};
-
-struct ListValue : public Value {
-  public:
-  Value* values;
-  int length;
-
-  ListValue(Value* pvalues, int plength) 
-    : values(pvalues), length(plength) {};
-
-  ValueType type() {
-    return ValueType::List;
-  }
-
-  std::string str_repr() {
-    std::string repr = "[";
-    for (int i = 0; i < length; i++) {
-      Value* value = values + i;
-      if (i != 0) {
-        repr += ", ";
-      } else {
-        repr += "]";
-      }
-      repr += value->str_repr();
-    }
-    return repr;
-  }
-};
-
-struct StringValue : public Value {
-  public:
-  std::string value;
-
-  StringValue(std::string pvalue) 
-    : value(pvalue) {};
-
-  ValueType type() {
-    return ValueType::String;
-  }
-
-  std::string str_repr() {
-    return value;
-  }
-};
+  while (is_space_or_break(*current = input->get())) {};
+}
 
 ///
 /// Reads a string until a space or a 
@@ -93,7 +21,7 @@ std::string read_string(std::istream* input, char* current, std::unordered_set<c
   while (true) {
     if (is_space_or_break(*current)) {
       // To give the next read a valid char
-      while (is_space_or_break((*current = input->get())));
+      skip_spaces(input, current);
       break;
     } else if (input->eof()) {
       break;
@@ -111,27 +39,31 @@ std::string read_string(std::istream* input, char* current, std::unordered_set<c
 Value* read_value(std::istream* input, char* current, std::unordered_set<char> exclusions) {
   
   if (is_letter(*current)) {
-    return new StringValue(read_string(input, current, emptyCharSet));
+    return new StringValue(read_string(input, current, exclusions));
   } else if (*current == '[') {
     *current = (char) input->get();
   } else if (*current == '{') {
     exclusions.insert('}');
     *current = (char) input->get();
+    skip_spaces(input, current);
     std::map<std::string, Value*> values;
     while (*current != '}' && !input->eof()) {
       std::string key = read_string(input, current, exclusions);
       Value* value = read_value(input, current, exclusions);
       values[key] = value;
+      skip_spaces(input, current, true);
     }
+    // skip the last '}' character
+    *current = (char) input->get();
+    // skip the last spaces
+    skip_spaces(input, current);
     return new MapValue(values);
   }
 
   return new StringValue("pito");
-  //while (is_space_or_break((*current = input->get())));
-  //return read_value(input, current, exclusions);
 }
 
-ProjectModel::ProjectModel(std::istream* input) {
+ProjectModel parse_project_model(std::istream* input) {
 
   
   bool full = false;
@@ -156,7 +88,5 @@ ProjectModel::ProjectModel(std::istream* input) {
   StringValue* nameValue = (StringValue*) entries["name"];
   StringValue* versionValue = (StringValue*) entries["version"];
 
-  this->group = groupValue->value;
-  this->name = nameValue->value;
-  this->version = versionValue->value;
+  return ProjectModel(groupValue->value, nameValue->value, versionValue->value);
 }

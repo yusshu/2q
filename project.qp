@@ -4,5 +4,5 @@ version test
 
 dependencies {
   compile me.yushust
-  runtimeOnly me.yushust
+  runtimeOnly me.yushustttttt
 }

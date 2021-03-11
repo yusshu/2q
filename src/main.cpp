@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
       }
 
       try {
-        ProjectModel model(&pm_input);
+        ProjectModel model = parse_project_model(&pm_input);
         info("Building " + model.name + "...");
       } catch (std::string errorMessage) {
         error("< Error occurred while parsing the project model file");

@@ -15,6 +15,10 @@ struct ProjectModel {
   ProjectModel(std::string pgroup, std::string pname, std::string pversion):
     group(pgroup), name(pname), version(pversion) {}
 
-  ProjectModel(std::istream* input);
-
 };
+
+///
+/// Parses a project model from
+/// an input stream
+///
+ProjectModel parse_project_model(std::istream* input);
