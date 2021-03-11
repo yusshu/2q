@@ -18,7 +18,6 @@ int main(int argc, char** argv) {
       /// Starts the build and checks
       /// for the project model (PM)
       /// file in the current working directory
-      info("> Starting build...");
       std::ifstream pm_input(PM_FILE_NAME);
 
       if (!pm_input.is_open()) {
@@ -26,9 +25,14 @@ int main(int argc, char** argv) {
         return 1;
       }
 
-      ProjectModel model(&pm_input); 
-
-      
+      try {
+        ProjectModel model(&pm_input);
+        info("Building " + model.name + "...");
+      } catch (std::string errorMessage) {
+        error("< Error occurred while parsing the project model file");
+        error("    < " + errorMessage);
+        return 1;
+      }
       return 0;
     } else {
       error("< Unknown operation");

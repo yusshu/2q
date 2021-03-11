@@ -1,0 +1,8 @@
+group me.yushust
+name hello-world
+version test
+
+dependencies {
+  compile me.yushust
+  runtimeOnly me.yushust
+}

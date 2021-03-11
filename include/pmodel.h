@@ -15,6 +15,6 @@ struct ProjectModel {
   ProjectModel(std::string pgroup, std::string pname, std::string pversion):
     group(pgroup), name(pname), version(pversion) {}
 
-  ProjectModel(std::istream* input) {};
+  ProjectModel(std::istream* input);
 
 };
