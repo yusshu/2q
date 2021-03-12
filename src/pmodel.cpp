@@ -96,9 +96,9 @@ ProjectModel parse_project_model(std::istream* input) {
     entries[key] = value;
   }
 
-  StringValue* groupValue = (StringValue*) entries["group"];
-  StringValue* nameValue = (StringValue*) entries["name"];
-  StringValue* versionValue = (StringValue*) entries["version"];
-
-  return ProjectModel(groupValue->value, nameValue->value, versionValue->value);
+  return ProjectModel(
+    entries["group"]->str_repr(), 
+    entries["name"]->str_repr(), 
+    entries["version"]->str_repr()
+  );
 }
