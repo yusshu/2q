@@ -5,10 +5,13 @@
 
 const std::unordered_set<char> emptyCharSet;
 
-inline void skip_spaces(std::istream* input, char* current, bool checkCurrent = false) {
-  if (checkCurrent && !is_space_or_break(*current)) {
-    return;
+inline void skip_spaces_checked(std::istream* input, char* current) {
+  if (is_space_or_break(*current)) {
+    skip_spaces(input, current);
   }
+}
+
+inline void skip_spaces(std::istream* input, char* current) {
   while (is_space_or_break(*current = input->get())) {};
 }
 
@@ -43,14 +46,14 @@ Value* read_value(std::istream* input, char* current, std::unordered_set<char> e
   } else if (*current == '[') {
     exclusions.insert(']');
     *current = (char) input->get();
-    skip_spaces(input, current, true);
+    skip_spaces_checked(input, current);
     
     std::vector<Value*> values;
 
     while (*current != ']' && !input->eof()) {
       Value* value = read_value(input, current, exclusions);
       values.push_back(value);
-      skip_spaces(input, current, true);
+      skip_spaces_checked(input, current);
     }
     // skip the last spaces
     skip_spaces(input, current);
@@ -58,13 +61,13 @@ Value* read_value(std::istream* input, char* current, std::unordered_set<char> e
   } else if (*current == '{') {
     exclusions.insert('}');
     *current = (char) input->get();
-    skip_spaces(input, current, true);
+    skip_spaces_checked(input, current);
     std::map<std::string, Value*> values;
     while (*current != '}' && !input->eof()) {
       std::string key = read_string(input, current, exclusions);
       Value* value = read_value(input, current, exclusions);
       values[key] = value;
-      skip_spaces(input, current, true);
+      skip_spaces_checked(input, current);
     }
     // skip the last spaces
     skip_spaces(input, current);
