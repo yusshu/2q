@@ -3,6 +3,8 @@
 #include "../include/stlutil.h"
 #include "../include/pmodelparse.h"
 
+const std::unordered_set<char> openChars = {'{', '['};
+
 inline void skip_spaces(std::istream* input, char* current) {
   while (is_space_or_break(*current = input->get())) {};
 }
@@ -29,7 +31,7 @@ std::string read_string(std::istream* input, char* current, std::unordered_set<c
     } else {
       value.push_back(*current);
       *current = (char) input->get();
-      if (has(exclusions, *current)) {
+      if (has(openChars, *current) || has(exclusions, *current)) {
         break;
       }
     }
