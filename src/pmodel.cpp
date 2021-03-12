@@ -3,14 +3,14 @@
 #include "../include/stlutil.h"
 #include "../include/pmodelparse.h"
 
+inline void skip_spaces(std::istream* input, char* current) {
+  while (is_space_or_break(*current = input->get())) {};
+}
+
 inline void skip_spaces_checked(std::istream* input, char* current) {
   if (is_space_or_break(*current)) {
     skip_spaces(input, current);
   }
-}
-
-inline void skip_spaces(std::istream* input, char* current) {
-  while (is_space_or_break(*current = input->get())) {};
 }
 
 ///
