@@ -3,8 +3,6 @@
 #include "../include/stlutil.h"
 #include "../include/pmodelparse.h"
 
-const std::unordered_set<char> emptyCharSet;
-
 inline void skip_spaces_checked(std::istream* input, char* current) {
   if (is_space_or_break(*current)) {
     skip_spaces(input, current);
