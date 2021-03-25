@@ -5,39 +5,6 @@
 
 const std::unordered_set<char> openChars = {'{', '['};
 
-inline void skip_spaces(std::istream* input, char* current) {
-  while (is_space_or_break(*current = input->get())) {};
-}
-
-inline void skip_spaces_checked(std::istream* input, char* current) {
-  if (is_space_or_break(*current)) {
-    skip_spaces(input, current);
-  }
-}
-
-///
-/// Reads a string until a space or a 
-/// line break is found
-///
-std::string read_string(std::istream* input, char* current, std::unordered_set<char> exclusions) {
-  std::string value;
-  while (true) {
-    if (is_space_or_break(*current)) {
-      // To give the next read a valid char
-      skip_spaces(input, current);
-      break;
-    } else if (input->eof()) {
-      break;
-    } else {
-      value.push_back(*current);
-      *current = (char) input->get();
-      if (has(openChars, *current) || has(exclusions, *current)) {
-        break;
-      }
-    }
-  }
-  return value;
-}
 
 Value* read_value(std::istream* input, char* current, std::unordered_set<char> exclusions) {
   
