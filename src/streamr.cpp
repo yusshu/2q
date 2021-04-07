@@ -2,17 +2,16 @@
 #include "../include/stlutil.h"
 
 ///
-/// Reads a string until a space, a 
+/// Reads an identifier until a space, a 
 /// line break or an excluded character
 /// is found
 ///
-std::string read_quoted_string(
+std::string read_identifier(
     std::istream* input,
     char* current,
     std::unordered_map<char, int> exclusions
 ) {
   std::string value;
-  *current = input->get();
   while (true) {
     if (is_space_or_break(*current)) {
       // To give the next read a valid char

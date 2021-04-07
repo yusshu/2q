@@ -2,6 +2,7 @@
 /// Utility functions for
 /// working with characters
 ///
+#pragma once
 
 inline bool is_space_or_break(char c) {
   return c == ' ' || c == '\n';

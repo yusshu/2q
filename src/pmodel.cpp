@@ -2,16 +2,17 @@
 #include "../include/token.h"
 #include "../include/stlutil.h"
 #include "../include/pmodelparse.h"
+#include "../include/streamr.h"
 
 const std::unordered_set<char> openChars = {'{', '['};
 
 
-Value* read_value(std::istream* input, char* current, std::unordered_set<char> exclusions) {
+Value* read_value(std::istream* input, char* current, std::unordered_map<char, int> exclusions) {
   
   if (is_letter(*current) || is_number(*current)) {
-    return new StringValue(read_string(input, current, exclusions));
+    return new StringValue(read_identifier(input, current, exclusions));
   } else if (*current == '[') {
-    exclusions.insert(']');
+    put_or_increase(exclusions, ']');
     *current = (char) input->get();
     skip_spaces_checked(input, current);
     
@@ -26,12 +27,12 @@ Value* read_value(std::istream* input, char* current, std::unordered_set<char> e
     skip_spaces(input, current);
     return new ListValue(values);
   } else if (*current == '{') {
-    exclusions.insert('}');
+    put_or_increase(exclusions, '}');
     *current = (char) input->get();
     skip_spaces_checked(input, current);
     std::map<std::string, Value*> values;
     while (*current != '}' && !input->eof()) {
-      std::string key = read_string(input, current, exclusions);
+      std::string key = read_identifier(input, current, exclusions);
       Value* value = read_value(input, current, exclusions);
       values[key] = value;
       skip_spaces_checked(input, current);
@@ -52,8 +53,8 @@ ProjectModel parse_project_model(std::istream* input) {
   char current = (char) input->get();
 
   while (!input->eof()) {
-    std::string key = read_string(input, &current, std::unordered_set<char>());
-    Value* value = read_value(input, &current, std::unordered_set<char>());
+    std::string key = read_identifier(input, &current, std::unordered_map<char, int>());
+    Value* value = read_value(input, &current, std::unordered_map<char, int>());
 
     std::cout << "Key: " << key << ". Value: " << value->str_repr() << std::endl;
 
