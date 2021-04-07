@@ -31,16 +31,5 @@ inline void put_or_increase(exclude_map map, char key) {
  * @return True if key was present in the map
  */
 inline bool check_and_decrease(exclude_map map, char key) {
-  auto result = map.find(key);
-  if (result == map.end()) {
-    return false;
-  } else {
-    int value = result->second - 1;
-    if (value <= 0) {
-      map.erase(result);
-    } else {
-      map[key] = value;
-    }
-    return true;
-  }
+
 }

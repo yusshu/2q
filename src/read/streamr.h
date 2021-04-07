@@ -6,8 +6,11 @@
 #include <unordered_map>
 #include "token.h"
 #include "../util/stl.h"
+#include "expression.h"
+#include "ctx.h"
 
 
+const Expression& read_expression(ParseContext& context);
 
 ///
 /// Reads an identifier from the given
@@ -35,15 +38,7 @@ std::string read_quoted_string(
     exclude_map exclusions
 ); 
 
-///
-/// Skips spaces in the given
-/// input stream without checking
-/// if the current character is a
-/// space or a line break
-///
-inline void skip_spaces(std::istream* input, char* current) {
-  while (is_space_or_break(*current = input->get())) {};
-}
+
 
 ///
 /// Skips spaces in the given
@@ -52,8 +47,5 @@ inline void skip_spaces(std::istream* input, char* current) {
 /// or a line break
 ///
 inline void skip_spaces_checked(std::istream* input, char* current) {
-  if (is_space_or_break(*current)) {
-    *current = input->get();
-    skip_spaces(input, current);
-  }
+
 }
