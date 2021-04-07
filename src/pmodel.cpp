@@ -1,5 +1,4 @@
 #include "../include/pmodel.h"
-#include "../include/token.h"
 #include "../include/stlutil.h"
 #include "../include/pmodelparse.h"
 #include "../include/streamr.h"
