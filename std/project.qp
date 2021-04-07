@@ -1,3 +1,32 @@
-group org.qqlang
+group org.qq-lang
 name standard
 version 0.1.0
+
+compile {
+  qlib {
+    name std-%version%.qlib
+  }
+  jar {
+    name std-%version%.jar
+    manifest {
+
+    }
+  }
+}
+
+format {
+  conventions {
+    naming {
+      classes upper-camel-case
+      functions snake-case
+      variables lower-camel-case
+      constants upper-case
+    }
+  }
+  lint {
+    indent {
+      style space
+      size 2
+    }
+  }
+}

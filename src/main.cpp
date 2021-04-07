@@ -1,10 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include "../include/color.h"
-#include "../include/log.h"
-#include "../include/pmodel.h"
-#include "../include/walker.h"
+#include "util/log.h"
+#include "model/pmodel.h"
+#include "build/walker.h"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -29,11 +28,9 @@ int main(int argc, char** argv) {
       try {
         ProjectModel model = parse_project_model(&pm_input);
         info("Building " + model.name + "...");
-        if (!walkBuilding(&model)) {
-          error("< Error occured while building the project");
-        }
-      } catch (std::string errorMessage) {
-        error("< Error occurred while parsing the project model file");
+        error("< Error occurred while building the project");
+      } catch (std::string& errorMessage) {
+        error("< Error occurred while building the project");
         error("    < " + errorMessage);
         return 1;
       }

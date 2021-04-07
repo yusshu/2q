@@ -1,5 +1,5 @@
-#include "../include/walker.h"
-#include "../include/log.h"
+#include "walker.h"
+#include "../util/log.h"
 #include <dirent.h>
 #include <string>
 

@@ -1,5 +1,5 @@
-#include "../include/streamr.h"
-#include "../include/stlutil.h"
+#include "streamr.h"
+#include "../util/stl.h"
 
 ///
 /// Reads an identifier until a space, a 

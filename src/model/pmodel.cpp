@@ -1,10 +1,7 @@
-#include "../include/pmodel.h"
-#include "../include/stlutil.h"
-#include "../include/pmodelparse.h"
-#include "../include/streamr.h"
-
-const std::unordered_set<char> openChars = {'{', '['};
-
+#include "pmodel.h"
+#include "../util/stl.h"
+#include "pmodelparse.h"
+#include "../read/streamr.h"
 
 Value* read_value(std::istream* input, char* current, std::unordered_map<char, int> exclusions) {
   

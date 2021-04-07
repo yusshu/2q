@@ -4,6 +4,7 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <utility>
 
 #define PM_FILE_NAME "project.qp"
 
@@ -14,7 +15,7 @@ struct ProjectModel {
   std::string version;
 
   ProjectModel(std::string pgroup, std::string pname, std::string pversion):
-    group(pgroup), name(pname), version(pversion) {}
+    group(std::move(pgroup)), name(std::move(pname)), version(std::move(pversion)) {}
 
 };
 
