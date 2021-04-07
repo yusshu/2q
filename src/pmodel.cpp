@@ -55,8 +55,6 @@ ProjectModel parse_project_model(std::istream* input) {
     std::string key = read_identifier(input, &current, std::unordered_map<char, int>());
     Value* value = read_value(input, &current, std::unordered_map<char, int>());
 
-    std::cout << "Key: " << key << ". Value: " << value->str_repr() << std::endl;
-
     auto search = entries.find(key);
     if (search != entries.end()) {
       throw "Found duplicated definition for key '" + key 
