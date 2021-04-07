@@ -1,6 +1,7 @@
 ///
 /// Classes for representing Project Models
 ///
+#pragma once
 #include <string>
 #include <iostream>
 

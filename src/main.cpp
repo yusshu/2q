@@ -4,6 +4,7 @@
 #include "../include/color.h"
 #include "../include/log.h"
 #include "../include/pmodel.h"
+#include "../include/walker.h"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -28,6 +29,9 @@ int main(int argc, char** argv) {
       try {
         ProjectModel model = parse_project_model(&pm_input);
         info("Building " + model.name + "...");
+        if (!walkBuilding(&model)) {
+          error("< Error occured while building the project");
+        }
       } catch (std::string errorMessage) {
         error("< Error occurred while parsing the project model file");
         error("    < " + errorMessage);
