@@ -1,8 +1,8 @@
 CXX = g++
-CFLAGS = -c -g
+CFLAGS = -c -g -std=c++17
 LFLAGS = -g
-SRC = ${wildcard src/*.cpp}
-HEADER = ${wildcard include/*.h}
+SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
+HEADER = $(wildcard src/*.h) $(wildcard src/**/*.h)
 OBJ = ${SRC:.cpp=.o}
 TARGET = qq
 

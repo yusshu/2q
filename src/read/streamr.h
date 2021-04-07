@@ -5,6 +5,9 @@
 #include <istream>
 #include <unordered_map>
 #include "token.h"
+#include "../util/stl.h"
+
+
 
 ///
 /// Reads an identifier from the given
@@ -16,7 +19,7 @@
 std::string read_identifier(
   std::istream* input,
   char* current,
-  std::unordered_map<char, int> exclusions
+  exclude_map exclusions
 );
 
 ///
@@ -29,7 +32,7 @@ std::string read_identifier(
 std::string read_quoted_string(
     std::istream* input,
     char* current,
-    std::unordered_map<char, int> exclusions
+    exclude_map exclusions
 ); 
 
 ///

@@ -1,22 +1,17 @@
-#include "walker.h"
+#include <filesystem>
 #include "../util/log.h"
-#include <dirent.h>
-#include <string>
+#include "walker.h"
+#include "build.h"
 
-bool walkBuilding(ProjectModel* model) {
-  DIR *dir;
-  struct dirent *ent;
-  if ((dir = opendir("./src")) != NULL) {
-    while ((ent = readdir(dir)) != NULL) {
-      std::string name = std::string(ent->d_name);
-      if (name != "." && name != "..") {
-        info("  > Compiling " + std::string(ent->d_name));
-      } 
+void walkBuilding(ProjectModel* model) {
+  if (!std::filesystem::exists("src")) {
+    error("  < 'src' directory not found");
+    return;
+  }
+  for (const auto& child : std::filesystem::recursive_directory_iterator("src")) {
+    if (!child.is_directory()) {
+      info("  > Building " + child.path().string());
+      build(child);
     }
-    closedir(dir);
-    return true;
-  } else {
-    error("\t'src' directory not found!");
-    return false;
   }
 }

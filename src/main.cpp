@@ -1,4 +1,3 @@
-#include <iostream>
 #include <fstream>
 #include <cstring>
 #include "util/log.h"
@@ -28,7 +27,7 @@ int main(int argc, char** argv) {
       try {
         ProjectModel model = parse_project_model(&pm_input);
         info("Building " + model.name + "...");
-        error("< Error occurred while building the project");
+        walkBuilding(&model);
       } catch (std::string& errorMessage) {
         error("< Error occurred while building the project");
         error("    < " + errorMessage);

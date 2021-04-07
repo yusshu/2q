@@ -43,8 +43,6 @@ Value* read_value(std::istream* input, char* current, std::unordered_map<char, i
 
 ProjectModel parse_project_model(std::istream* input) {
 
-  
-  bool full = false;
   std::map<std::string, Value*> entries;
   char current = (char) input->get();
 

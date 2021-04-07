@@ -4,4 +4,4 @@
 ///
 #include "../model/pmodel.h"
 
-bool walkBuilding(ProjectModel* model);
+void walkBuilding(ProjectModel* model);

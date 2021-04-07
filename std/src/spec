@@ -1,0 +1,62 @@
+use <identifiers separated by comma>
+
+//
+expression:
+  - ( expression )
+  - binary:
+  - - expression + expression
+  - - expression - expression
+  - - expression[expression]
+  - - expression ?? expression
+  - - expression = expression
+  - - expression || expression
+  - - expression += expression
+  - - expression -= expression
+  - - expression == expression
+  - ternary:
+  - - expression ? expression : expression
+  - function call:
+  - - identifier(expression separated by comma)
+  - literals:
+  - - strings
+  - - numbers
+  - - identifiers
+statements:
+  - conditional statement:
+  - - keyword 'if'
+  - - (
+  - - boolean expression
+  - - )
+  - - {
+  - - [statements]
+  - - }
+  -
+//
+
+class declarations
+  - keyword 'class'
+  - identifier class name
+  - {
+  - class body
+  - constructor
+  - attributes declarations
+  - function declarations
+  - }
+function declarations
+  - optional keyword 'priv'
+  - identifier return type
+  - identifier function name
+  - (
+  - parameters separated by comma
+  - parameter: identifier type, identifier name
+  - )
+  - {
+  - function body:
+  - variable declarations
+  - - identifier type
+  - - identifier name
+  - - optional token =
+  - - expression value
+  - - optional comma, backs to name
+  - expression
+  - }
