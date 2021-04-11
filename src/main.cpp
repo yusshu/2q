@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
       }
 
       try {
-        ProjectModel model = parse_project_model(&pm_input);
+        ProjectModel model = parse_project_model(pm_input);
         info("Building " + model.name + "...");
         walkBuilding(&model);
       } catch (std::string& errorMessage) {

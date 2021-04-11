@@ -5,12 +5,14 @@
 #include <istream>
 #include <unordered_map>
 #include "token.h"
-#include "../util/stl.h"
+#include "../core.h"
 #include "expression.h"
 #include "ctx.h"
 
 
-const Expression& read_expression(ParseContext& context);
+Expression* read_expression(ParseContext& context);
+
+Expression* read_binary_expr(ParseContext& context, Expression* first);
 
 ///
 /// Reads an identifier from the given
@@ -19,11 +21,7 @@ const Expression& read_expression(ParseContext& context);
 /// The read stops when an excluded character
 /// (present in the exclusions map) is found
 ///
-std::string read_identifier(
-  std::istream* input,
-  char* current,
-  exclude_map exclusions
-);
+std::string read_identifier(ParseContext& context);
 
 ///
 /// Reads a string from the given
@@ -36,16 +34,4 @@ std::string read_quoted_string(
     std::istream* input,
     char* current,
     exclude_map exclusions
-); 
-
-
-
-///
-/// Skips spaces in the given
-/// input stream checking if the
-/// current character is a space
-/// or a line break
-///
-inline void skip_spaces_checked(std::istream* input, char* current) {
-
-}
+);

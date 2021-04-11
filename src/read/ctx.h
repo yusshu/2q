@@ -2,8 +2,9 @@
  * Context definitions for input
  * stream reading
  */
+#pragma once
 #include <istream>
-#include "../util/stl.h"
+#include "../core.h"
 
 struct ParseError : std::exception {
   const char* cause;
@@ -59,6 +60,10 @@ struct ParseContext {
   void push_exclusion(char key) {
     auto result = exclusions.find(key);
     exclusions[key] = result == exclusions.end() ? 1 : result->second + 1;
+  }
+
+  bool check_exclusion(char key) {
+    return exclusions.find(key) != exclusions.end();
   }
 
   /**

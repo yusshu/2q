@@ -23,4 +23,4 @@ struct ProjectModel {
 /// Parses a project model from
 /// an input stream
 ///
-ProjectModel parse_project_model(std::istream* input);
+ProjectModel parse_project_model(std::istream& input);

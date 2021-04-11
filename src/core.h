@@ -1,5 +1,7 @@
 #include <unordered_map>
 
+// #define __2Q_PROD
+
 /**
  * The map used to store the
  * character exclusions, works
