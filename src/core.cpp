@@ -7,8 +7,8 @@
 namespace qq {
 
   //#region Source location
-  SourceLoc::SourceLoc(const char* pfilename, size_t pline, size_t pcolumn)
-    : filename(pfilename), line(pline), column(pcolumn) {}
+  SourceLoc::SourceLoc(const char* pfilename)
+    : filename(pfilename), line(0), column(0) {}
 
   void SourceLoc::operator++() {
     column++;

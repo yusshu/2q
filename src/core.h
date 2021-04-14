@@ -20,7 +20,7 @@ namespace qq {
     size_t line;
     size_t column;
 
-    SourceLoc(const char* filename, size_t line, size_t column);
+    SourceLoc(const char* filename);
 
     /** Increments the column counter */
     void operator++();
