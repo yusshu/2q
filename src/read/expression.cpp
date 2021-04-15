@@ -1,5 +1,16 @@
 #include "expression.h"
 #include "streamr.h"
+#include <iostream>
+
+Expression* try_as_binary_expr(ParseContext& context, Expression* expr) {
+  context.skip_spaces();
+  Expression* asBinaryExpr = read_binary_expr(context, expr);
+  if (asBinaryExpr == nullptr) {
+    return expr;
+  } else {
+    return asBinaryExpr;
+  }
+}
 
 Expression *read_expression(ParseContext &context) {
   context.skip_spaces();
@@ -12,7 +23,7 @@ Expression *read_expression(ParseContext &context) {
     Expression *expr = read_expression(context);
     // assert it's closed
     context.assert_exclusion(')');
-    return expr;
+    return try_as_binary_expr(context, expr);
   } else if (is_letter_or_underscore(current)) {
     std::string identifier;
     identifier.push_back(current);
@@ -20,7 +31,22 @@ Expression *read_expression(ParseContext &context) {
       identifier.push_back(current);
     }
     context.skip_spaces();
-    return new LiteralExpression<std::string>(identifier);
+    Expression* expr;
+    if (identifier == "true") {
+      expr = new LiteralExpression<bool>(true);
+    } else if (identifier == "false") {
+      expr = new LiteralExpression<bool>(false);
+    } else {
+      expr = new IdentifierExpression(identifier);
+    }
+    return try_as_binary_expr(context, expr);
+  } else if (current == '"') {
+    std::string value;
+    while ((current = ++context) != '"') {
+      value.push_back(current);
+    }
+    ++context;
+    return try_as_binary_expr(context, new LiteralExpression<std::string>(value));
   } else if (is_number(current)) {
     int value = current - '0';
     while (is_number((current = ++context))) {
@@ -28,7 +54,7 @@ Expression *read_expression(ParseContext &context) {
       value += current - '0';
     }
     context.skip_spaces();
-    return new LiteralExpression<int>(value);
+    return try_as_binary_expr(context, new LiteralExpression<int>(value));
   } else {
     throw ParseError("Cannot parse huh");
   }

@@ -4,7 +4,7 @@
  */
 #include "core.h"
 
-namespace qq {
+//namespace qq {
 
   //#region Source location
   SourceLoc::SourceLoc(const char* pfilename)
@@ -29,4 +29,4 @@ namespace qq {
   }
   //#endregion
 
-}
+//}

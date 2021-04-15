@@ -1,7 +1,9 @@
+#pragma once
 #include <unordered_map>
+#include <string>
 
 // #define __2Q_PROD
-namespace qq {
+//namespace qq {
 
   /**
    * The map type used to store the
@@ -36,5 +38,5 @@ namespace qq {
 
   };
 
-}
+//}
 

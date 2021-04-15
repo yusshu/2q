@@ -8,7 +8,8 @@
 enum ExpressionKind {
   BINARY,
   TERNARY,
-  LITERAL
+  LITERAL,
+  IDENTIFIER
 };
 
 struct Expression {
@@ -60,12 +61,12 @@ struct TernaryExpression : Expression {
   TernaryExpression(Expression* pcondition, Expression* ptruthValue, Expression* pfalseValue)
       : condition(pcondition), truthValue(ptruthValue), falseValue(pfalseValue) {}
 
-  ExpressionKind kind() {
+  ExpressionKind kind() override {
     return ExpressionKind::TERNARY;
   }
 
 #ifndef __2Q_PROD
-  std::string repr() {
+  std::string repr() override {
     return "<ternary " + truthValue->repr() + " if "
            + condition->repr() + " else " + falseValue->repr() + ">";
   }
@@ -102,8 +103,8 @@ struct BinaryExpression : Expression {
 
 #ifndef __2Q_PROD
   std::string repr() {
-    return "<binary " + kindNames[(int) ownKind] + " "
-           + first->repr() + " " + second->repr() + " >";
+    return "<" + kindNames[(int) ownKind] + " "
+           + first->repr() + " " + second->repr() + ">";
   }
 #endif
 
@@ -114,15 +115,33 @@ struct LiteralExpression : Expression {
 
   T value;
 
-  LiteralExpression(T pvalue) : value(pvalue) {}
+  explicit LiteralExpression(T pvalue) : value(pvalue) {}
 
   ExpressionKind kind() override {
     return ExpressionKind::LITERAL;
   }
 
 #ifndef __2Q_PROD
-  std::string repr() {
+  std::string repr() override {
     return "<literal " + std::to_string(value) + ">";
+  }
+#endif
+
+};
+
+struct IdentifierExpression : Expression {
+
+  std::string name;
+
+  explicit IdentifierExpression(std::string pname) : name(pname) {}
+
+  ExpressionKind kind() override {
+    return ExpressionKind::IDENTIFIER;
+  }
+
+#ifndef __2Q_PROD
+  std::string repr() override {
+    return "<identifier " + name + ">";
   }
 #endif
 
@@ -133,15 +152,15 @@ struct LiteralExpression<std::string> : Expression {
 
   std::string value;
 
-  LiteralExpression(std::string pvalue) : value(pvalue) {}
+  explicit LiteralExpression(std::string pvalue) : value(pvalue) {}
 
   ExpressionKind kind() override {
     return ExpressionKind::LITERAL;
   }
 
 #ifndef __2Q_PROD
-  std::string repr() {
-    return "<literal " + value + ">";
+  std::string repr() override {
+    return "<literal '" + value + "'>";
   }
 #endif
 
