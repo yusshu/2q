@@ -1,14 +1,67 @@
-//
-// Created by ndrm on 4/15/21.
-//
+#include <vector>
+#include "expression.h"
 
-#ifndef INC_2Q_STATEMENT_H
-#define INC_2Q_STATEMENT_H
+#ifndef __2Q_PROD
+static std::string statementKinds[] = {
+    "if", "while", "expression"
+};
+#endif
 
+struct Statement {
 
-class statement {
+  enum Kind {
+    IF, WHILE, EXPRESSION
+  };
 
+  virtual Kind kind() = 0;
+
+#ifndef __2Q_PROD
+  virtual std::string repr() = 0;
+#endif
 };
 
+struct ExpressionStatement : Statement {
+  Expression* expression;
 
-#endif //INC_2Q_STATEMENT_H
+  ExpressionStatement(Expression* expr) : expression(expr) {}
+
+  Kind kind() override {
+    return Kind::EXPRESSION;
+  }
+
+#ifndef __2Q_PROD
+  std::string repr() override {
+    return expression->repr();
+  }
+#endif
+};
+
+struct ConditionalStatement : Statement {
+
+  Kind m_kind;
+  Expression* condition;
+  std::vector<Statement*> body;
+
+  ConditionalStatement(Kind kind, Expression* pcondition, std::vector<Statement*> pbody)
+    : m_kind(kind), condition(pcondition), body(pbody) {}
+
+  Kind kind() override {
+    return m_kind;
+  }
+
+#ifndef __2Q_PROD
+  std::string repr() override {
+    std::string repr = "[" + statementKinds[(int) m_kind] + " " + condition->repr() + " ] -> ";
+    for (Statement* statement : body) {
+      if (statement == nullptr) {
+        repr += "null";
+      } else {
+        repr += statement->repr();
+      }
+      repr += "; ";
+    }
+    return repr;
+  }
+#endif
+
+};

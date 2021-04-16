@@ -7,8 +7,10 @@
 #include "token.h"
 #include "../core.h"
 #include "expression.h"
+#include "statement.h"
 #include "ctx.h"
 
+Statement* read_statement(ParseContext& context);
 
 Expression* read_expression(ParseContext& context);
 

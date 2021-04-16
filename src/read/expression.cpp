@@ -1,6 +1,5 @@
 #include "expression.h"
 #include "streamr.h"
-#include <iostream>
 
 Expression* try_as_binary_expr(ParseContext& context, Expression* expr) {
   context.skip_spaces();
@@ -56,7 +55,7 @@ Expression *read_expression(ParseContext &context) {
     context.skip_spaces();
     return try_as_binary_expr(context, new LiteralExpression<int>(value));
   } else {
-    throw ParseError("Cannot parse huh");
+    return nullptr;
   }
 }
 
@@ -159,7 +158,7 @@ Expression* read_binary_expr(ParseContext& context, Expression* first) {
     if (++context == '?') {
       context.skip_next_spaces();
       // so it's nullability coalescing operator
-      Expression* second = read_expression(context);
+      Expression *second = read_expression(context);
       // Finally we have the expression!
       return new BinaryExpression(first, second, BinaryExpression::Kind::NULL_COALESCING);
     } else {
@@ -170,13 +169,30 @@ Expression* read_binary_expr(ParseContext& context, Expression* first) {
       // push the ':' character as exclusion
       context.push_exclusion(':');
       // read the truth value
-      Expression* truthVal = read_expression(context);
+      Expression *truthVal = read_expression(context);
       // assert that the character is a ':'
       context.assert_exclusion(':');
       // read the false value
-      Expression* falseVal = read_expression(context);
+      Expression *falseVal = read_expression(context);
       return new TernaryExpression(first, truthVal, falseVal);
     }
+  } else if (current == '(') {
+    context.skip_next_spaces();
+    context.push_exclusion(')');
+    std::vector<Expression*> args;
+    while (context.current != ')') {
+      context.push_exclusion(',');
+      Expression* arg = read_expression(context);
+      args.push_back(arg);
+      context.skip_spaces();
+      if (context.current == ')') {
+        break;
+      } else {
+        context.assert_exclusion(',');
+      }
+    }
+    context.assert_exclusion(')');
+    return new FunctionCallExpression(first, args);
   } else {
     // cannot parse as a binary expression
     context.skip_spaces();

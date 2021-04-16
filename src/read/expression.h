@@ -4,10 +4,12 @@
  */
 #pragma once
 #include <string>
+#include <vector>
 
 enum ExpressionKind {
   BINARY,
   TERNARY,
+  FUNCTION_CALL,
   LITERAL,
   IDENTIFIER
 };
@@ -74,6 +76,30 @@ struct TernaryExpression : Expression {
 
 };
 
+struct FunctionCallExpression : Expression {
+  Expression* first;
+  std::vector<Expression*> args;
+
+  FunctionCallExpression(Expression* pfirst, std::vector<Expression*> pargs)
+      : first(pfirst), args(pargs) {}
+
+  ExpressionKind kind() override {
+    return ExpressionKind::FUNCTION_CALL;
+  }
+
+#ifndef __2Q_PROD
+  std::string repr() override {
+    std::string repr = "<call " + first->repr() + " with args (";
+    for (Expression* arg : args) {
+      repr += arg->repr();
+      repr += ", ";
+    }
+    repr += ")";
+    return repr;
+  }
+#endif
+};
+
 struct BinaryExpression : Expression {
 
   enum Kind {
@@ -102,7 +128,7 @@ struct BinaryExpression : Expression {
   }
 
 #ifndef __2Q_PROD
-  std::string repr() {
+  std::string repr() override {
     return "<" + kindNames[(int) ownKind] + " "
            + first->repr() + " " + second->repr() + ">";
   }
