@@ -50,7 +50,8 @@ static std::string kindNames[] = {
     "logical_or", "bitwise_or",
     "logical_and", "bitwise_and",
     "equality", "inequality",
-    "less_than", "greater_than"
+    "less_than", "greater_than",
+    "dot"
 };
 #endif
 
@@ -113,7 +114,8 @@ struct BinaryExpression : Expression {
     LOGICAL_OR, BITWISE_OR,
     LOGICAL_AND, BITWISE_AND,
     EQUALITY, INEQUALITY,
-    LESS_THAN, GREATER_THAN
+    LESS_THAN, GREATER_THAN,
+    DOT
   };
 
   Expression* first;

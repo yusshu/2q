@@ -1,84 +1,101 @@
 #include "expression.h"
 #include "streamr.h"
 
-Expression* try_as_binary_expr(ParseContext& context, Expression* expr) {
-  context.skip_spaces();
-  Expression* asBinaryExpr = read_binary_expr(context, expr);
-  if (asBinaryExpr == nullptr) {
-    return expr;
-  } else {
-    return asBinaryExpr;
-  }
-}
+Expression* read_simple_expr(ParseContext& context) {
 
-Expression *read_expression(ParseContext &context) {
-  context.skip_spaces();
-  char current = context.current;
-  // wrapped expression
-  if (current == '(') {
-    ++context;
+  //#region wrapped expression
+  if (context.current == '(') {
+    // skip the current '(' and next spaces
+    context.skip_next_spaces();
     // add the ')' as exclusion
     context.push_exclusion(')');
     Expression *expr = read_expression(context);
     // assert it's closed
     context.assert_exclusion(')');
-    return try_as_binary_expr(context, expr);
-  } else if (is_letter_or_underscore(current)) {
+    return expr;
+  }
+  //#endregion
+
+  //#region identifier and literal boolean expressions
+  if (is_letter_or_underscore(context.current)) {
     std::string identifier;
-    identifier.push_back(current);
-    while (is_letter_or_underscore((current = ++context))) {
-      identifier.push_back(current);
+    identifier.push_back(context.current);
+    while (is_letter_or_underscore(++context)) {
+      identifier.push_back(context.current);
     }
     context.skip_spaces();
-    Expression* expr;
+
+    // check if it's a literal keyword
     if (identifier == "true") {
-      expr = new LiteralExpression<bool>(true);
+      return new LiteralExpression<bool>(true);
     } else if (identifier == "false") {
-      expr = new LiteralExpression<bool>(false);
+      return new LiteralExpression<bool>(false);
     } else {
-      expr = new IdentifierExpression(identifier);
+      return new IdentifierExpression(identifier);
     }
-    return try_as_binary_expr(context, expr);
-  } else if (current == '"') {
+  }
+  //#endregion
+
+  //#region string literal expression
+  if (context.current == '"') {
     std::string value;
-    while ((current = ++context) != '"') {
-      value.push_back(current);
+    while (++context != '"') {
+      value.push_back(context.current);
     }
-    ++context;
-    return try_as_binary_expr(context, new LiteralExpression<std::string>(value));
-  } else if (is_number(current)) {
-    int value = current - '0';
-    while (is_number((current = ++context))) {
+    context.skip_next_spaces(); // skip the last double quote and next spaces
+    return new LiteralExpression<std::string>(value);
+  }
+  //#endregion
+
+  //#region number literal expression
+  if (is_number(context.current)) {
+    int value = context.current - '0';
+    while (is_number((context.current = ++context))) {
       value *= 10;
-      value += current - '0';
+      value += context.current - '0';
     }
     context.skip_spaces();
-    return try_as_binary_expr(context, new LiteralExpression<int>(value));
+    return new LiteralExpression<int>(value);
+  }
+  //#endregion
+
+  return nullptr;
+}
+
+Expression* read_expression(ParseContext &context) {
+  context.skip_spaces();
+  Expression* expr = read_simple_expr(context);
+  if (expr == nullptr) {
+    return expr;
   } else {
-    return nullptr;
+    while (!context.check_removing_exclusion(context.current)) {
+      expr = read_binary_expr(context, expr);
+    }
+    return expr;
   }
 }
 
-Expression* read_eqsuffixed_expr(
-    ParseContext& context,
-    Expression* first,
-    BinaryExpression::Kind simpleKind,
-    BinaryExpression::Kind assignationKind
-) {
-  // Skip the operator and check if next
-  // is a '=' then skip spaces on both cases
-  BinaryExpression::Kind kind;
-  if (++context == '=') {
+Expression* read_term(ParseContext& context, Expression* first) {
+  if (context.current == '*') {
+    // skip the current '*' and next spaces
     context.skip_next_spaces();
-    kind = assignationKind;
-  } else {
-    context.skip_spaces();
-    kind = simpleKind;
+    // read the second expression
+    Expression* second = read_simple_expr(context);
+    return new BinaryExpression(first, second, BinaryExpression::Kind::MULTIPLY);
   }
-  // Read the right expression
-  Expression* second = read_expression(context);
-  // Finally we have the assign-operate or operate expression
-  return new BinaryExpression(first, second, kind);
+  return first;
+}
+
+Expression* read_add(ParseContext& context, Expression* first) {
+  if (context.current == '+') {
+    // skip the current '+' and next spaces
+    context.skip_next_spaces();
+    // read simple expr or term if present
+    Expression* second = read_term(context, read_simple_expr(context));
+    return new BinaryExpression(first, second, BinaryExpression::Kind::ADD);
+  } else {
+    return read_term(context, first);
+  }
 }
 
 /**
@@ -94,7 +111,13 @@ Expression* read_eqsuffixed_expr(
  */
 Expression* read_binary_expr(ParseContext& context, Expression* first) {
   char current = context.current;
-  if (current == '[') {
+  if (current == '.') {
+    // Skip the '.' and the next spaces
+    context.skip_next_spaces();
+    // Read the second expression
+    Expression* second = read_expression(context);
+    return new BinaryExpression(first, second, BinaryExpression::Kind::DOT);
+  } else if (current == '[') {
     // Skip the '[' and the next spaces
     context.skip_next_spaces();
     // Add the ']' as exclusion
@@ -105,38 +128,6 @@ Expression* read_binary_expr(ParseContext& context, Expression* first) {
     context.assert_exclusion(']');
     // Finally we have the indexing expression
     return new BinaryExpression(first, second, BinaryExpression::Kind::INDEXING);
-  } else if (current == '+') {
-    // check for addition
-    return read_eqsuffixed_expr(
-        context, first,
-        BinaryExpression::Kind::ADD, BinaryExpression::Kind::ASSIGN_ADD
-    );
-  } else if (current == '-') {
-    // check for subtraction
-    return read_eqsuffixed_expr(
-        context, first,
-        BinaryExpression::Kind::SUBTRACT, BinaryExpression::Kind::ASSIGN_SUBTRACT
-    );
-  } else if (current == '*') {
-    // check for multiplication
-    return read_eqsuffixed_expr(
-        context, first,
-        BinaryExpression::Kind::MULTIPLY, BinaryExpression::Kind::ASSIGN_MULTIPLY
-    );
-  } else if (current == '/') {
-    // check for division
-    return read_eqsuffixed_expr(
-        context, first,
-        BinaryExpression::Kind::DIVIDE, BinaryExpression::Kind::ASSIGN_DIVIDE
-    );
-  } else if (current == '=') {
-    // check for comparison, this isn't really
-    // an "assignable" binary expression, but it
-    // it works as expected
-    return read_eqsuffixed_expr(
-        context, first,
-        BinaryExpression::Kind::ASSIGN, BinaryExpression::Kind::EQUALITY
-    );
   } else if (current == '!') {
     // Skip the operator and check if next
     // is a '=' then skip spaces
@@ -196,6 +187,6 @@ Expression* read_binary_expr(ParseContext& context, Expression* first) {
   } else {
     // cannot parse as a binary expression
     context.skip_spaces();
-    return nullptr;
+    return read_add(context, first);
   }
 }

@@ -5,6 +5,7 @@
 #pragma once
 #include <istream>
 #include "../core.h"
+#include "expression.h"
 
 struct ParseError : std::exception {
   const char* cause;
@@ -21,6 +22,7 @@ struct ParseContext {
   std::istream& input;
   char current;
   exclude_map& exclusions;
+  Expression* previous;
 
   ParseContext(std::istream& pinput, exclude_map& pexclusions)
     : input(pinput), exclusions(pexclusions) {
@@ -60,6 +62,22 @@ struct ParseContext {
   void push_exclusion(char key) {
     auto result = exclusions.find(key);
     exclusions[key] = result == exclusions.end() ? 1 : result->second + 1;
+  }
+
+  bool check_removing_exclusion(char key) {
+    if (key == current) {
+      auto result = exclusions.find(key);
+      if (result != exclusions.end()) {
+        int value = result->second - 1;
+        if (value <= 0) {
+          exclusions.erase(result);
+        } else {
+          exclusions[key] = value;
+        }
+        return true;
+      }
+    }
+    return false;
   }
 
   bool check_exclusion(char key) {

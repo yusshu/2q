@@ -1,7 +1,3 @@
-if true {
-  log("poto")
-  while true {
-    log("poto")
-  }
+if 2 + 5 * 8 + 2 * poto {
 }
 

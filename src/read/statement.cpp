@@ -6,11 +6,13 @@ Statement* read_conditional(ParseContext& context, Statement::Kind kind) {
     context.skip_next_spaces();
     context.push_exclusion(')');
   }
+  context.push_exclusion('{');
   Expression* condition = read_expression(context);
   context.skip_spaces();
   if (paren) {
     context.assert_exclusion(')');
   }
+  context.check_removing_exclusion('{');
 
   bool many = false;
 
