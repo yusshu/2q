@@ -68,7 +68,7 @@ Expression* read_expression(ParseContext &context) {
   if (expr == nullptr) {
     return expr;
   } else {
-    while (!context.check_removing_exclusion(context.current)) {
+    while (!context.check_exclusion(context.current) && !is_space_or_break(context.current)) {
       expr = read_binary_expr(context, expr);
     }
     return expr;

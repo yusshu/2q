@@ -12,7 +12,7 @@ Statement* read_conditional(ParseContext& context, Statement::Kind kind) {
   if (paren) {
     context.assert_exclusion(')');
   }
-  context.check_removing_exclusion('{');
+  context.remove_exclusion('{');
 
   bool many = false;
 

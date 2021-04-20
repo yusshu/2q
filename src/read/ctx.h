@@ -13,6 +13,9 @@ struct ParseError : std::exception {
   ParseError(const char* pcause)
     : cause(pcause) {}
 
+  ParseError(std::string pcause)
+    : cause(pcause.c_str()) {}
+
   const char* what() const noexcept override {
     return cause;
   }
@@ -64,24 +67,23 @@ struct ParseContext {
     exclusions[key] = result == exclusions.end() ? 1 : result->second + 1;
   }
 
-  bool check_removing_exclusion(char key) {
-    if (key == current) {
-      auto result = exclusions.find(key);
-      if (result != exclusions.end()) {
-        int value = result->second - 1;
-        if (value <= 0) {
-          exclusions.erase(result);
-        } else {
-          exclusions[key] = value;
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
   bool check_exclusion(char key) {
     return exclusions.find(key) != exclusions.end();
+  }
+
+  bool remove_exclusion(char key) {
+    auto result = exclusions.find(key);
+    if (result == exclusions.end()) {
+      return false;
+    } else {
+      int value = result->second - 1;
+      if (value <= 0) {
+        exclusions.erase(result);
+      } else {
+        exclusions[key] = value;
+      }
+      return true;
+    }
   }
 
   /**
@@ -92,17 +94,11 @@ struct ParseContext {
    */
   void assert_exclusion(char key) {
     if (key == current) {
-      auto result = exclusions.find(key);
-      if (result == exclusions.end()) {
-        throw ParseError("Unexpected token");
-      } else {
-        int value = result->second - 1;
-        if (value <= 0) {
-          exclusions.erase(result);
-        } else {
-          exclusions[key] = value;
-        }
+      if (remove_exclusion(key)) {
         skip_next_spaces();
+      } else {
+        std::string reason = "unexpected token";
+        throw new ParseError(reason + key);
       }
     } else {
       std::string cause = "Expected '";

@@ -51,14 +51,14 @@ struct ConditionalStatement : Statement {
 
 #ifndef __2Q_PROD
   std::string repr() override {
-    std::string repr = "[" + statementKinds[(int) m_kind] + " " + condition->repr() + " ] -> ";
+    std::string repr = "[" + statementKinds[(int) m_kind] + " " + condition->repr() + " ] -> \n";
     for (Statement* statement : body) {
       if (statement == nullptr) {
         repr += "null";
       } else {
         repr += statement->repr();
       }
-      repr += "; ";
+      repr += ";\n";
     }
     return repr;
   }
