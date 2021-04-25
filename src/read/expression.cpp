@@ -68,8 +68,13 @@ Expression* read_expression(ParseContext &context) {
   if (expr == nullptr) {
     return expr;
   } else {
-    while (!context.check_exclusion(context.current) && !is_space_or_break(context.current)) {
-      expr = read_binary_expr(context, expr);
+    while (true) {
+      Expression* newExpr = read_binary_expr(context, expr);
+      if (newExpr == expr) {
+        break;
+      } else {
+        expr = newExpr;
+      }
     }
     return expr;
   }
@@ -121,7 +126,7 @@ Expression* read_binary_expr(ParseContext& context, Expression* first) {
     // Skip the '[' and the next spaces
     context.skip_next_spaces();
     // Add the ']' as exclusion
-    context.push_exclusion('[');
+    context.push_exclusion(']');
     // Read the right expression
     Expression* second = read_expression(context);
     // Assert that the current character is ']'

@@ -97,8 +97,8 @@ struct ParseContext {
       if (remove_exclusion(key)) {
         skip_next_spaces();
       } else {
-        std::string reason = "unexpected token";
-        throw new ParseError(reason + key);
+        std::string reason = "unexpected token: ";
+        throw ParseError(reason + key);
       }
     } else {
       std::string cause = "Expected '";
